@@ -1,12 +1,14 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
-import 'package:get/get.dart';
-import 'package:mindplex_app/routes/app_routes.dart';
+import 'package:flutter/material.dart';
+import 'package:mindplex_app/services/api_services.dart';
 
-import 'auth_controller/auth_controller.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// import '../api/shared_preference/shared_preference.dart';
+import '../main.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback changePage;
@@ -56,8 +58,6 @@ class _LoginPageState extends State<LoginPage> {
 
     TextTheme textTheme = Theme.of(context).textTheme;
 
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     Color secondbackgroundColor = Theme.of(context).cardColor;
     return CupertinoPageScaffold(
       backgroundColor: Color.fromARGB(255, 9, 64, 56),
@@ -76,8 +76,8 @@ class _LoginPageState extends State<LoginPage> {
                         width: MediaQuery.of(context).size.width,
                         child: Column(children: [
                           Image.asset('assets/images/logo_with_name.png'),
-                          SizedBox(
-                            height: screenHeight * 0.020,
+                          const SizedBox(
+                            height: 15,
                           ),
                           Text(
                             "Hey there,",
@@ -86,9 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.w400),
                           ),
-                          SizedBox(
-                            height: screenHeight * 0.007,
-                          ),
+                          const SizedBox(height: 5),
                           Text(
                             "Welcome Back",
                             style: textTheme.displayMedium?.copyWith(
@@ -98,8 +96,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ]),
                       ),
-                      SizedBox(
-                        height: screenHeight * 0.020,
+                      const SizedBox(
+                        height: 20,
                       ),
                       Container(
                         width: MediaQuery.of(context).size.width,
@@ -109,14 +107,14 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                height: screenHeight * 0.017,
+                              const SizedBox(
+                                height: 10,
                               ),
                               Container(
-                                height: screenHeight * 0.091,
+                                height: 50,
                                 decoration: BoxDecoration(
                                   color: secondbackgroundColor,
-                                  boxShadow: const [
+                                  boxShadow: [
                                     BoxShadow(
                                       blurRadius: 10,
                                       offset: const Offset(1, 1),
@@ -181,19 +179,19 @@ class _LoginPageState extends State<LoginPage> {
                               // emailError != null && isSaved
                               //     ? errorMessage(emailError.toString())
                               //     : Container(),
-
-                              SizedBox(
-                                height: screenHeight * 0.025,
+                              const SizedBox(
+                                height: 15,
                               ),
                               Container(
-                                height: screenHeight * 0.091,
+                                height: 50,
                                 decoration: BoxDecoration(
                                   color: secondbackgroundColor,
-                                  boxShadow: const [
+                                  boxShadow: [
                                     BoxShadow(
                                       blurRadius: 10,
-                                      offset: Offset(1, 1),
-                                      color: Color.fromARGB(54, 188, 187, 187),
+                                      offset: const Offset(1, 1),
+                                      color: const Color.fromARGB(
+                                          54, 188, 187, 187),
                                     )
                                   ],
                                   borderRadius: BorderRadius.circular(15),
@@ -219,12 +217,12 @@ class _LoginPageState extends State<LoginPage> {
                                       icon: isPressed
                                           ? Icon(Icons.visibility_off_outlined,
                                               color: passwordFocusNode.hasFocus
-                                                  ? const Color.fromARGB(
+                                                  ? Color.fromARGB(
                                                       224, 14, 187, 158)
                                                   : Colors.grey)
                                           : Icon(Icons.visibility_outlined,
                                               color: passwordFocusNode.hasFocus
-                                                  ? const Color.fromARGB(
+                                                  ? Color.fromARGB(
                                                       224, 14, 187, 158)
                                                   : Colors.grey),
                                     ),
@@ -272,9 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                               // passwordError != null && isSaved
                               //     ? errorMessage(passwordError.toString())
                               //     : Container(),
-                              SizedBox(
-                                height: screenHeight * 0.025,
-                              ),
+                              const SizedBox(height: 15),
                               Align(
                                 alignment: Alignment.center,
                                 child: InkWell(
@@ -294,12 +290,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: screenHeight * 0.036,
+                      const SizedBox(
+                        height: 23,
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: const RoundedRectangleBorder(
+                            shape: RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10))),
                             fixedSize: Size(260, 50),
@@ -307,8 +303,8 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: login,
                         child: Text('Login'),
                       ),
-                      SizedBox(
-                        height: screenHeight * 0.025,
+                      const SizedBox(
+                        height: 15,
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 50.0),
@@ -321,8 +317,8 @@ class _LoginPageState extends State<LoginPage> {
                                 height: 1,
                               ),
                             ),
-                            SizedBox(
-                              width: screenWidth * 0.016,
+                            const SizedBox(
+                              width: 10,
                             ),
                             const Text(
                               "Or",
@@ -331,8 +327,8 @@ class _LoginPageState extends State<LoginPage> {
                                   fontWeight: FontWeight.w600,
                                   fontSize: 17),
                             ),
-                            SizedBox(
-                              width: screenWidth * 0.016,
+                            const SizedBox(
+                              width: 10,
                             ),
                             Flexible(
                               flex: 1,
@@ -355,7 +351,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                               child: Container(
                                   width: 40,
-                                  height: screenHeight * 0.067,
+                                  height: 40,
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(15),
@@ -369,8 +365,8 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: screenHeight * 0.032,
+                      const SizedBox(
+                        height: 20,
                       ),
                       RichText(
                         text: TextSpan(children: [
@@ -391,8 +387,8 @@ class _LoginPageState extends State<LoginPage> {
                         ]),
                       ),
                       SizedBox(
-                        height: screenHeight * 0.05,
-                      ),
+                        height: 30,
+                      )
                     ],
                   ),
                 ),
@@ -414,27 +410,17 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context) => Center(
                 child: CircularProgressIndicator(color: Colors.green[900]),
               ));
-      AuthController authController = Get.put(AuthController());
-      await authController.loginUser(
+
+      String res = await ApiSerivice().loginUser(
           email: emailController.text,
           password: passwordController.text,
           loginType: 'email_password');
+      // navigatorKey.currentState!.popUntil((rout) => rout.isFirst);
 
-      if (authController.isAuthenticated.value) {
-        Get.offAllNamed(AppRoutes.landingPage);
+      if (res == "success") {
+        // Get.offAllNamed(AppRoute.landingPage);
       } else {
-        Navigator.pop(context);
-        Flushbar(
-          flushbarPosition: FlushbarPosition.BOTTOM,
-          margin: const EdgeInsets.fromLTRB(10, 20, 10, 5),
-          titleSize: 20,
-          messageSize: 17,
-          messageColor: Colors.red,
-          backgroundColor: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          message: "Failed To Login",
-          duration: const Duration(seconds: 5),
-        ).show(context);
+        print("failed to login");
       }
     }
   }

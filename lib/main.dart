@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:mindplex_app/routes/app_routes.dart';
+import 'package:mindplex_app/auth/login.dart';
+import 'package:mindplex_app/provider/popularProvider.dart';
+import 'package:mindplex_app/screens/popularScreen.dart';
+import 'package:provider/provider.dart';
 
 import 'splash_screen.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => PopularProvider())
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,15 +18,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      initialRoute: '/',
-      getPages: AppRoutes.pages,
+    return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SplashScreen(),
+      home: const PopularScreen(),
+      //SplashScreen()
     );
   }
 }

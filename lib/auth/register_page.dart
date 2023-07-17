@@ -2,6 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import 'package:mindplex_app/services/api_services.dart';
+
+import '../main.dart';
+
 class RegisterPage extends StatefulWidget {
   final VoidCallback changePage;
 
