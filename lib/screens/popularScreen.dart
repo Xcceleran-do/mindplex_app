@@ -91,7 +91,7 @@ class _PopularScreenState extends State<PopularScreen> {
                           child: Container()),
                       Container(
                         margin: const EdgeInsets.only(left: 5),
-                        child: const Column(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
