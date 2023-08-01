@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mindplex_app/screens/detailsPage.dart';
 import 'package:mindplex_app/services/PopularServices.dart';
+import 'package:mindplex_app/widgets/expand_text.dart';
 import 'dart:ui' show ImageFilter;
 import '../models/popularModel.dart';
 import '../routes/app_routes.dart';
@@ -15,11 +17,17 @@ class PopularScreen extends StatefulWidget {
 
 class _PopularScreenState extends State<PopularScreen> {
   List<PopularDetails> popularList = [];
+  List<String> itemStates = [];
+  String? selectedItemState;
   Map<String, List<PopularDetails>> popularListGrouped = {};
+  Map<String, List<PopularDetails>> stateListGrouped = {};
   GlobalKey<ScaffoldState> _globalkey = GlobalKey<ScaffoldState>();
+  PopularDetails? item;
   bool isLoading = true;
 
   int currentCategoryIndex = 0;
+  int currentStateIndex = 0;
+  String currentTap = "home";
 
   @override
   void initState() {
@@ -27,20 +35,10 @@ class _PopularScreenState extends State<PopularScreen> {
       loadPopularList();
     });
     super.initState();
-
-    // popularList =
-    //     Provider.of<PopularProvider>(context, listen: false).getAllPopularList;
   }
 
-  /*
-  Builder(builder: (ctx) {
-        Scaffold.of(ctx).openDrawer();
-        return Container();
-      }
-  */
   @override
   Widget build(BuildContext context) {
-    // popularList = context.read<PopularProvider>().getAllPopularList;
     return Scaffold(
       backgroundColor: Color(0xFF0c2b46),
       key: _globalkey,
@@ -56,8 +54,7 @@ class _PopularScreenState extends State<PopularScreen> {
               end: Alignment.bottomRight,
               colors: [Color(0xFF062f46), Color(0xFF1d253d)],
             )),
-            child: ListView(
-              padding: EdgeInsets.only(top: 20, left: 20),
+            child: Column(
               children: [
                 // UserAccountsDrawerHeader(
                 //   accountName: Text(
@@ -204,94 +201,99 @@ class _PopularScreenState extends State<PopularScreen> {
                     },
                   ),
                 ),
+
                 const SizedBox(
                   height: 10,
                 ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.upgrade_rounded,
-                    size: 25,
-                    color: Color(0xFFf55586),
+                GestureDetector(
+                  onTap: () => {},
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.upgrade_rounded,
+                      size: 25,
+                      color: Color(0xFFf55586),
+                    ),
+                    title: const Text(
+                      'Upgrade',
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFf55586)),
+                    ),
+                    onTap: () {},
                   ),
-                  title: const Text(
-                    'Upgrade',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFf55586)),
-                  ),
-                  onTap: () {
-                    // ...
-                  },
                 ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.description_outlined,
-                    size: 25,
-                    color: Colors.white,
-                  ),
-                  title: const Text(
-                    'Read',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  onTap: () {
-                    // ...
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.videocam,
-                    size: 25,
-                    color: Colors.white,
-                  ),
-                  title: const Text(
-                    'Watch',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  onTap: () {
-                    // ...
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.headphones,
-                    size: 25,
-                    color: Colors.white,
-                  ),
-                  title: const Text(
-                    'Listen',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  onTap: () {
-                    // ...
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(
-                    Icons.new_label_rounded,
-                    size: 25,
-                    color: Colors.white,
-                  ),
-                  title: const Text(
-                    'New',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  onTap: () {
-                    // ...
-                  },
-                ),
+                Container(
+                    margin: const EdgeInsets.only(bottom: 5, left: 5),
+                    child: SingleChildScrollView(
+                        child: Column(children: [
+                      ...List<Widget>.generate(
+                          itemStates.length,
+                          (index) => InkWell(
+                              onTap: () {
+                                setState(() {
+                                  selectedItemState = itemStates[index];
+                                });
+
+                                _globalkey.currentState!.closeDrawer();
+                              },
+                              child: ListTile(
+                                  leading: itemStates[index] == "read"
+                                      ? const Icon(
+                                          Icons.description_outlined,
+                                          color: Color(0xFF8aa7da),
+                                          size: 20,
+                                        )
+                                      : itemStates[index] == "watch"
+                                          ? const Icon(
+                                              Icons.videocam,
+                                              color: Color.fromARGB(
+                                                  255, 185, 127, 127),
+                                              size: 20,
+                                            )
+                                          : itemStates[index] == "listen"
+                                              ? const Icon(
+                                                  Icons.headphones,
+                                                  color: Colors.green,
+                                                  size: 20,
+                                                )
+                                              : const Icon(
+                                                  Icons.new_label_rounded,
+                                                  size: 25,
+                                                  color: Colors.white,
+                                                ),
+                                  selected:
+                                      itemStates[index] == selectedItemState,
+                                  selectedColor: Colors.green,
+                                  title: Text(
+                                    itemStates[index],
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  )))),
+                      InkWell(
+                        onTap: () {},
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.new_label_rounded,
+                            size: 25,
+                            color: Colors.white,
+                          ),
+                          title: const Text(
+                            'New',
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          onTap: () {
+                            selectedItemState = null;
+                            _globalkey.currentState!.closeDrawer();
+                          },
+                        ),
+                      ),
+                    ])))
               ],
             ),
           ),
@@ -349,9 +351,21 @@ class _PopularScreenState extends State<PopularScreen> {
                                   padding: const EdgeInsets.only(
                                       left: 20, right: 20, top: 8, bottom: 8),
                                   decoration: BoxDecoration(
-                                      color: currentCategoryIndex == index
-                                          ? Color(0xFF46b4b5)
-                                          : Color(0xFF0f567c),
+                                      color: selectedItemState == "read" &&
+                                              currentCategoryIndex == index
+                                          ? Color(0xFF8aa7da)
+                                          : selectedItemState == "watch" &&
+                                                  currentCategoryIndex == index
+                                              ? Color.fromARGB(
+                                                  255, 185, 127, 127)
+                                              : selectedItemState == "listen" &&
+                                                      currentCategoryIndex ==
+                                                          index
+                                                  ? Colors.green
+                                                  : currentCategoryIndex ==
+                                                          index
+                                                      ? Color(0xFF46b4b5)
+                                                      : Color(0xFF0f567c),
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(10))),
                                   child: Text(
@@ -373,228 +387,247 @@ class _PopularScreenState extends State<PopularScreen> {
                           .value
                           .length,
                       itemBuilder: (context, index) {
-                        return Container(
-                          margin: const EdgeInsets.only(
-                              left: 20, right: 20, bottom: 10),
-                          height: 180,
-                          decoration: const BoxDecoration(
-                              color: Color(0xFF103e56),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 10, top: 10, right: 5),
-                                    height: 40,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: Colors.green,
-                                      image: const DecorationImage(
-                                        image: AssetImage(
-                                            "assets/images/profile.PNG"),
+                        if (selectedItemState != null &&
+                            popularListGrouped.entries
+                                    .toList()[currentCategoryIndex]
+                                    .value[index]
+                                    .state !=
+                                selectedItemState) {
+                          return Container();
+                        }
+                        return GestureDetector(
+                          onTap: () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DetailsPage(
+                                        details: popularListGrouped.entries
+                                            .toList()[currentCategoryIndex]
+                                            .value[index])))
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(
+                                left: 20, right: 20, bottom: 10),
+                            height: 190,
+                            decoration: const BoxDecoration(
+                                color: Color(0xFF103e56),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 10, top: 10, right: 5),
+                                      height: 40,
+                                      width: 40,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.green,
+                                        image: const DecorationImage(
+                                          image: AssetImage(
+                                              "assets/images/profile.PNG"),
+                                        ),
                                       ),
                                     ),
+                                    Container(
+                                      margin: EdgeInsets.only(right: 3),
+                                      child: SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .50,
+                                        child: Text(
+                                          popularListGrouped.entries
+                                              .toList()[currentCategoryIndex]
+                                              .value[index]
+                                              .profileName!,
+                                          style: const TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w300,
+                                              fontStyle: FontStyle.normal,
+                                              color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(left: 3),
+                                      child: popularListGrouped.entries
+                                                  .toList()[
+                                                      currentCategoryIndex]
+                                                  .value[index]
+                                                  .MPXR !=
+                                              " "
+                                          ? const Text("")
+                                          : Row(
+                                              children: [
+                                                const Text(
+                                                  "| ",
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontStyle:
+                                                          FontStyle.normal,
+                                                      color: Colors.white),
+                                                ),
+                                                Text(
+                                                  popularListGrouped.entries
+                                                      .toList()[
+                                                          currentCategoryIndex]
+                                                      .value[index]
+                                                      .MPXR!,
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white),
+                                                )
+                                              ],
+                                            ),
+                                    ),
+                                    Container(
+                                      height: 60,
+                                      width: 35,
+                                      margin: EdgeInsets.only(left: 10, top: 0),
+                                      decoration: const BoxDecoration(
+                                          color: Colors.black,
+                                          borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(5),
+                                            bottomRight: Radius.circular(5),
+                                          )),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                bottom: 10),
+                                            child: popularListGrouped.entries
+                                                        .toList()[
+                                                            currentCategoryIndex]
+                                                        .value[index]
+                                                        .state ==
+                                                    "read"
+                                                ? const Icon(
+                                                    Icons.description_outlined,
+                                                    color: Color(0xFF8aa7da),
+                                                    size: 20,
+                                                  )
+                                                : popularListGrouped.entries
+                                                            .toList()[
+                                                                currentCategoryIndex]
+                                                            .value[index]
+                                                            .state ==
+                                                        "watch"
+                                                    ? const Icon(
+                                                        Icons.videocam,
+                                                        color: Color.fromARGB(
+                                                            255, 185, 127, 127),
+                                                        size: 20,
+                                                      )
+                                                    : const Icon(
+                                                        Icons.headphones,
+                                                        color: Colors.green,
+                                                        size: 20,
+                                                      ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Container(
+                                  margin:
+                                      const EdgeInsets.only(left: 10, top: 10),
+                                  child: Text(
+                                    popularListGrouped.entries
+                                        .toList()[currentCategoryIndex]
+                                        .value[index]
+                                        .title!,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF6eded0)),
                                   ),
-                                  Container(
-                                    margin: EdgeInsets.only(right: 3),
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          .50,
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 10, top: 10, right: 20),
+                                  child: ExpandableText(
+                                    text: popularListGrouped.entries
+                                        .toList()[currentCategoryIndex]
+                                        .value[index]
+                                        .description!,
+                                    textClr: Colors.white,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Row(
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 10, bottom: 5),
                                       child: Text(
                                         popularListGrouped.entries
                                             .toList()[currentCategoryIndex]
                                             .value[index]
-                                            .profileName!,
+                                            .lastSeen!,
                                         style: const TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w300,
-                                            fontStyle: FontStyle.normal,
                                             color: Colors.white),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 3),
-                                    child: popularListGrouped.entries
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 5),
+                                      child: Text(
+                                        popularListGrouped.entries
+                                            .toList()[currentCategoryIndex]
+                                            .value[index]
+                                            .state!,
+                                        style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w300,
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 5),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            popularListGrouped.entries
                                                 .toList()[currentCategoryIndex]
                                                 .value[index]
-                                                .MPXR !=
-                                            " "
-                                        ? const Text("")
-                                        : Row(
-                                            children: [
-                                              const Text(
-                                                "| ",
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontStyle: FontStyle.normal,
-                                                    color: Colors.white),
-                                              ),
-                                              Text(
-                                                popularListGrouped.entries
-                                                    .toList()[
-                                                        currentCategoryIndex]
-                                                    .value[index]
-                                                    .MPXR!,
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.white),
-                                              )
-                                            ],
+                                                .views!,
+                                            style: const TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.white),
                                           ),
-                                  ),
-                                  Container(
-                                    height: 60,
-                                    width: 35,
-                                    margin: EdgeInsets.only(left: 10, top: 0),
-                                    decoration: const BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(5),
-                                          bottomRight: Radius.circular(5),
-                                        )),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Container(
-                                          margin:
-                                              const EdgeInsets.only(bottom: 10),
-                                          child: popularListGrouped.entries
-                                                      .toList()[
-                                                          currentCategoryIndex]
-                                                      .value[index]
-                                                      .state ==
-                                                  "read"
-                                              ? const Icon(
-                                                  Icons.description_outlined,
-                                                  color: Color(0xFF8aa7da),
-                                                  size: 20,
-                                                )
-                                              : popularListGrouped.entries
-                                                          .toList()[
-                                                              currentCategoryIndex]
-                                                          .value[index]
-                                                          .state ==
-                                                      "watch"
-                                                  ? const Icon(
-                                                      Icons.videocam,
-                                                      color: Color.fromARGB(
-                                                          255, 185, 127, 127),
-                                                      size: 20,
-                                                    )
-                                                  : const Icon(
-                                                      Icons.headphones,
-                                                      color: Colors.green,
-                                                      size: 20,
-                                                    ),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Container(
-                                margin:
-                                    const EdgeInsets.only(left: 10, top: 10),
-                                child: Text(
-                                  popularListGrouped.entries
-                                      .toList()[currentCategoryIndex]
-                                      .value[index]
-                                      .title!,
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF6eded0)),
+                                          const SizedBox(
+                                            width: 2,
+                                          ),
+                                          const Text(
+                                            "views",
+                                            style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.white),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 10, top: 10, right: 20),
-                                child: Text(
-                                  popularListGrouped.entries
-                                      .toList()[currentCategoryIndex]
-                                      .value[index]
-                                      .description!,
-                                  maxLines: 3,
-                                  style: const TextStyle(
-                                      fontSize: 12,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                              ),
-                              const Spacer(),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 10, bottom: 5),
-                                    child: Text(
-                                      popularListGrouped.entries
-                                          .toList()[currentCategoryIndex]
-                                          .value[index]
-                                          .lastSeen!,
-                                      style: const TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w300,
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(bottom: 5),
-                                    child: Text(
-                                      popularListGrouped.entries
-                                          .toList()[currentCategoryIndex]
-                                          .value[index]
-                                          .state!,
-                                      style: const TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w300,
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(bottom: 5),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          popularListGrouped.entries
-                                              .toList()[currentCategoryIndex]
-                                              .value[index]
-                                              .views!,
-                                          style: const TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.white),
-                                        ),
-                                        const SizedBox(
-                                          width: 2,
-                                        ),
-                                        const Text(
-                                          "views",
-                                          style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.w300,
-                                              color: Colors.white),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         );
                       }),
@@ -612,32 +645,93 @@ class _PopularScreenState extends State<PopularScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Container(
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  currentTap = "home";
+                });
+              },
+              child: Container(
+                  margin: EdgeInsets.only(left: 8),
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      color: currentTap == "home"
+                          ? Color.fromARGB(255, 193, 78, 78)
+                          : Colors.black.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Icon(
+                    Icons.cottage_sharp,
+                    size: 40,
+                    color: Colors.white,
+                  )),
+            ),
+            GestureDetector(
+                onTap: () {
+                  setState(() {
+                    currentTap = "search";
+                  });
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 8),
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      color: currentTap == "search"
+                          ? Color.fromARGB(255, 193, 78, 78)
+                          : Colors.black.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Icon(
+                    Icons.search_outlined,
+                    size: 40,
+                    color: Colors.white,
+                  ),
+                )),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  currentTap = "notification";
+                });
+              },
+              child: Container(
                 margin: EdgeInsets.only(left: 8),
-                height: 40,
-                width: 40,
+                height: 50,
+                width: 50,
                 decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 193, 78, 78),
+                    color: currentTap == "notification"
+                        ? Color.fromARGB(255, 193, 78, 78)
+                        : Colors.black.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(10)),
-                child: const Icon(
-                  Icons.cottage_sharp,
+                child: Icon(
+                  Icons.notifications_outlined,
                   size: 40,
                   color: Colors.white,
-                )),
-            const Icon(
-              Icons.search_outlined,
-              size: 40,
-              color: Colors.white,
+                ),
+              ),
             ),
-            const Icon(
-              Icons.notifications_outlined,
-              size: 40,
-              color: Colors.white,
-            ),
-            const Icon(
-              Icons.email_outlined,
-              size: 30,
-              color: Colors.white,
+            GestureDetector(
+              onTap: () {
+                setState(
+                  () {
+                    currentTap = "email";
+                  },
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: 8),
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                    color: currentTap == "email"
+                        ? Color.fromARGB(255, 193, 78, 78)
+                        : Colors.black.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Icon(
+                  Icons.email_outlined,
+                  size: 30,
+                  color: Colors.white,
+                ),
+              ),
             )
           ],
         ),
@@ -656,8 +750,10 @@ class _PopularScreenState extends State<PopularScreen> {
         popularListGrouped["All"] = popularList;
         popularListGrouped = {
           ...popularListGrouped,
-          ...popularList.groupListsBy<String>((element) => element.type!)
+          ...popularList.groupListsBy<String>((element) => element.type!),
         };
+
+        itemStates = popularList.map((e) => e.state!).toSet().toList();
       });
     } catch (e) {}
     setState(() {

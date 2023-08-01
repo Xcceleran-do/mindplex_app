@@ -18,14 +18,14 @@ Future<List<PopularDetails>> getData() async {
   //     .toList();
 
   final jsondata = await rootBundle.loadString('assets/demoAPI.json');
-  print("json value are loaded.............");
+  //print("json value are loaded.............");
   final List<dynamic> populars = await jsonDecode(jsondata);
-  print(".........................json value are loaded" + populars.toString());
+  //print(".........................json value are loaded" + populars.toString());
   List<PopularDetails> popularDetail = [];
   populars.forEach((jsonCategory) {
     PopularDetails popularCategory = PopularDetails.fromJson(jsonCategory);
     popularDetail.add(popularCategory);
   });
-  print("the length of the json is ${popularDetail.length}");
+  // print("the length of the json is ${popularDetail.length}");
   return popularDetail;
 }
