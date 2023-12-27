@@ -394,8 +394,7 @@ class ApiService {
     return notificationsMap;
   }
 
-  Future<List<Map<String, dynamic>>> getPublishedPosts(
-      {required String username}) async {
+  Future<List<Blog>> getPublishedPosts({required String username}) async {
     var dio = Dio();
     Rx<LocalStorage> localStorage =
         LocalStorage(flutterSecureStorage: FlutterSecureStorage()).obs;
@@ -403,17 +402,14 @@ class ApiService {
 
     if (authenticationController.isGuestUser.value == false)
       dio.options.headers["Authorization"] = "Bearer ${token}";
-
     Response response =
         await dio.get("${AppUrls.profileUrl}/${username}?type=full");
-    var publishedPosts = <Map<String, dynamic>>[];
 
+    List<Blog> publishedPosts = [];
     for (var post in response.data["published_posts"]) {
-      Blog.fromJson(post);
-      publishedPosts.add(post);
+      publishedPosts.add(Blog.fromJson(post));
     }
 
-    print(response.data);
     return publishedPosts;
   }
 }
