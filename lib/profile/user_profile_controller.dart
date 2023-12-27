@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:mindplex/models/auth_model.dart';
+import 'package:mindplex/models/blog_model.dart';
 import 'package:mindplex/models/user_profile.dart';
 import 'package:mindplex/profile/user_profile_displays/draft_screen.dart';
 import 'package:mindplex/services/api_services.dart';
@@ -28,29 +30,29 @@ class ProfileController extends GetxController {
 
   AuthController authController = Get.find();
 
-  var screens = [
-    {'name': 'About', 'active': true, 'widget': const AboutScreen(), "num": 1},
-    {
-      'name': 'Published Content',
-      "active": false,
-      'widget': const BookmarkScreen(),
-      "num": 2
-    },
-    {
-      'name': 'Bookmarks',
-      "active": false,
-      'widget': const BookmarkScreen(),
-      "num": 2
-    },
-    {'name': 'Drafts', "active": false, 'widget': const DraftScreen(), "num": 3}
-  ];
+  // var screens = [
+  //   {'name': 'About', 'active': true, 'widget': const AboutScreen(), "num": 1},
+  //   {
+  //     'name': 'Published Content',
+  //     "active": false,
+  //     // 'widget': BookmarkScreen(),
+  //     "num": 2
+  //   },
+  //   {
+  //     'name': 'Bookmarks',
+  //     "active": false,
+  //     // 'widget': BookmarkScreen(),
+  //     "num": 2
+  //   },
+  //   {'name': 'Drafts', "active": false, 'widget': const DraftScreen(), "num": 3}
+  // ];
 
   ScrollController searchScrollController = ScrollController();
   bool reachedEndOfListSearch = false;
   RxList<UserProfile> searchResults = <UserProfile>[].obs;
   RxString searchQuery = "".obs;
   RxInt searchPage = 1.obs;
-  
+
   @override
   void onInit() {
     super.onInit();
@@ -86,23 +88,25 @@ class ProfileController extends GetxController {
     isLoading.value = true;
     final res = await apiService.value.fetchUserProfile(userName: username);
     userProfile.value = res;
+    publishedPosts.value = [];
     isLoading.value = false;
   }
 
-  void fetchSearchResults(String query) async{
+  void fetchSearchResults(String query) async {
     reachedEndOfListSearch = false;
     isLoading.value = true;
     searchPage.value = 1;
-    final res = await apiService.value.fetchSearchResponse(query,searchPage.value.toInt());
-    if(res.users!.isEmpty){
+    final res = await apiService.value
+        .fetchSearchResponse(query, searchPage.value.toInt());
+    if (res.users!.isEmpty) {
       reachedEndOfListSearch = true;
     }
     searchResults.value = res.users!;
     searchQuery.value = query;
     isLoading.value = false;
   }
-  void loadMoreSearchResults(String query) async {
 
+  void loadMoreSearchResults(String query) async {
     if (isLoading.value || reachedEndOfListSearch) {
       return;
     }
@@ -110,7 +114,8 @@ class ProfileController extends GetxController {
     isLoading.value = true;
     searchPage.value++; // Increment the page number
 
-    final res = await apiService.value.fetchSearchResponse(query,searchPage.value.toInt());
+    final res = await apiService.value
+        .fetchSearchResponse(query, searchPage.value.toInt());
 
     if (res.users!.isEmpty) {
       reachedEndOfListSearch = true;
@@ -151,5 +156,20 @@ class ProfileController extends GetxController {
 
   List<UserProfile> get searchedUsers {
     return searchResults;
+  }
+
+  RxList<Blog> publishedPosts = <Blog>[].obs;
+  RxBool isPostLoading = false.obs;
+  Future<void> getPublishedPosts({required String username}) async {
+    if (publishedPosts.length > 0) {
+      return;
+    }
+
+    isPostLoading.value = true;
+    List<Blog> res =
+        await apiService.value.getPublishedPosts(username: username);
+
+    publishedPosts.value = res;
+    isPostLoading.value = false;
   }
 }
