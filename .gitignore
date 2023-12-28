@@ -28,6 +28,7 @@ migrate_working_dir/
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
+.metadata
 .pub-cache/
 .pub/
 /build/
@@ -48,4 +49,6 @@ app.*.map.json
 /windows
 /macos
 /linux
+android/app/src/main/kotlin/
+ios/RunnerTests/
 
